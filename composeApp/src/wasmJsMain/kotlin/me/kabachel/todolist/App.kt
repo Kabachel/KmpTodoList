@@ -1,35 +1,46 @@
 package me.kabachel.todolist
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import io.ktor.client.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-import todolist.composeapp.generated.resources.Res
-import todolist.composeapp.generated.resources.compose_multiplatform
+val client = HttpClient {
+    install(Logging)
+}
 
 @Composable
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+        var text by remember { mutableStateOf("Please wait...") }
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(Unit) {
+            delay(3000)
+            scope.launch {
+                val url = Url(BASE_URL)
+                val response = client.get(url)
+                text = response.bodyAsText()
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+        }
+
+        Box(Modifier.fillMaxSize()) {
+            Text(
+                text,
+                modifier = Modifier.align(Alignment.Center),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
+
+private const val BASE_URL = "http://localhost:8080"
