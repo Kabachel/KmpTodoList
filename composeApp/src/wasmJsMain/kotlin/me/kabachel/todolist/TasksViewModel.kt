@@ -1,5 +1,7 @@
 package me.kabachel.todolist
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import me.kabachel.todolist.mvi.BaseViewModel
 import me.kabachel.todolist.mvi.NoEffect
 
@@ -10,8 +12,10 @@ class TasksViewModel(
     override fun setInitialState(): State = State.Loading
 
     init {
-        val tasks = tasksRepository.getTasks()
-        setState { State.TasksContent(tasks) }
+        viewModelScope.launch {
+            val tasks = tasksRepository.getTasks()
+            setState { State.TasksContent(tasks) }
+        }
     }
 
     override fun handleEvent(event: Event) {

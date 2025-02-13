@@ -25,7 +25,9 @@ fun App() {
         val onEvent: (Event) -> Unit = viewModel::handleEvent
         when (val state = viewModel.viewState.value) {
             is State.Loading -> {
-                CircularProgressIndicator()
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(100.dp))
+                }
             }
 
             is State.TasksContent -> {
@@ -139,5 +141,3 @@ private fun Task.Priority.getPriorityColor(): Color {
         Task.Priority.Vital -> Color.Magenta.copy(alpha = 0.5f)
     }
 }
-
-private const val BASE_URL = "http://localhost:8080"

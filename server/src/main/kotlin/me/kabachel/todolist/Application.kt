@@ -9,6 +9,8 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -19,12 +21,8 @@ fun Application.module() {
     installModules()
 
     routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}") {
-                headers {
-                    append(HttpHeaders.AccessControlAllowOrigin, BASE_URL)
-                }
-            }
+        get("tasks") {
+            call.respond(HttpStatusCode.OK, tasks)
         }
     }
 }
@@ -50,4 +48,36 @@ private fun Application.contentNegotiationInstall() {
     }
 }
 
-private const val BASE_URL = "http://localhost:8080/"
+@OptIn(ExperimentalUuidApi::class)
+private val tasks = listOf(
+    Task(
+        id = Uuid.random(),
+        name = "Таска в тудуисте",
+        description = "Очень классная таска",
+        Task.Priority.Medium
+    ),
+//    Task(
+//        id = Uuid.random(),
+//        name = "Write marketing copy",
+//        description = "Write a compelling description for the new product",
+//        priority = Task.Priority.High,
+//    ),
+//    Task(
+//        id = Uuid.random(),
+//        name = "Implement payment flow",
+//        description = "Set up a system for processing payments",
+//        priority = Task.Priority.Vital,
+//    ),
+//    Task(
+//        id = Uuid.random(),
+//        name = "Create user onboarding",
+//        description = "Design a seamless onboarding process for new users",
+//        priority = Task.Priority.High,
+//    ),
+//    Task(
+//        id = Uuid.random(),
+//        name = "Optimize for SEO",
+//        description = "Improve search engine rankings to increase organic traffic",
+//        priority = Task.Priority.Low,
+//    )
+)
