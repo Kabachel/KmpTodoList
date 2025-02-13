@@ -1,9 +1,11 @@
 package me.kabachel.todolist
 
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,13 +16,8 @@ fun main() {
 }
 
 fun Application.module() {
-    install(CORS) {
-        anyHost()
-        allowMethod(HttpMethod.Get)
-        allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.AccessControlAllowOrigin)
-        exposeHeader(HttpHeaders.AccessControlAllowOrigin)
-    }
+    installModules()
+
     routing {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}") {
@@ -29,6 +26,27 @@ fun Application.module() {
                 }
             }
         }
+    }
+}
+
+private fun Application.installModules() {
+    corsInstall()
+    contentNegotiationInstall()
+}
+
+private fun Application.corsInstall() {
+    install(CORS) {
+        anyHost()
+        allowMethod(HttpMethod.Get)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        exposeHeader(HttpHeaders.AccessControlAllowOrigin)
+    }
+}
+
+private fun Application.contentNegotiationInstall() {
+    install(ContentNegotiation) {
+        json()
     }
 }
 

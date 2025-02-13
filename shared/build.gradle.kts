@@ -28,6 +28,9 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+
             implementation(libs.kotlinx.serialization.json)
         }
     }
