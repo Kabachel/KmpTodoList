@@ -11,6 +11,41 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
+ktor {
+    fatJar {
+        // :buildFatJar - build
+        // :runFatJar - build and run
+        // output: build/libs
+        archiveFileName.set("fat.jar")
+    }
+
+    docker {
+        // buildImage
+        // publishImageToLocalRegistry
+        // runDocker
+        // publishImage
+        jreVersion.set(JavaVersion.VERSION_22)
+        localImageName.set("sample-docker-image")
+        imageTag.set("0.0.1-preview")
+        portMappings.set(
+            listOf(
+                io.ktor.plugin.features.DockerPortMapping(
+                    80,
+                    8080,
+                    io.ktor.plugin.features.DockerPortMappingProtocol.TCP
+                )
+            )
+        )
+        externalRegistry.set(
+            io.ktor.plugin.features.DockerImageRegistry.dockerHub(
+                appName = provider { "ktor-app" },
+                username = providers.environmentVariable("DOCKER_HUB_USERNAME"),
+                password = providers.environmentVariable("DOCKER_HUB_PASSWORD")
+            )
+        )
+    }
+}
+
 dependencies {
     implementation(projects.shared)
 
