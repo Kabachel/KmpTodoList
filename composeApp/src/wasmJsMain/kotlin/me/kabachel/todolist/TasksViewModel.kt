@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package me.kabachel.todolist
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.kabachel.todolist.mvi.BaseViewModel
 import me.kabachel.todolist.mvi.NoEffect
+import kotlin.uuid.ExperimentalUuidApi
 
 class TasksViewModel(
     private val tasksRepository: TasksRepository,
@@ -48,6 +51,15 @@ class TasksViewModel(
                 viewModelScope.launch {
                     setState { State.Loading }
                     tasksRepository.createTask(event.task)
+                    val tasks = tasksRepository.getTasks()
+                    setState { State.TasksContent(tasks.sortedBy { it.name }) }
+                }
+            }
+
+            is Event.DeleteTaskClick -> {
+                viewModelScope.launch {
+                    setState { State.Loading }
+                    tasksRepository.deleteTask(event.uuid)
                     val tasks = tasksRepository.getTasks()
                     setState { State.TasksContent(tasks.sortedBy { it.name }) }
                 }

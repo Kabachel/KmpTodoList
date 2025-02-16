@@ -108,14 +108,14 @@ private fun TasksContent(
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
             items(state.tasks) { task ->
-                TaskItem(task)
+                TaskItem(task, onEvent)
             }
         }
     }
 }
 
 @Composable
-private fun TaskItem(task: Task) {
+private fun TaskItem(task: Task, onEvent: (Event) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -140,6 +140,10 @@ private fun TaskItem(task: Task) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Button(onClick = {}) {
                     Text(text = "Edit")
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedButton(onClick = { onEvent(Event.DeleteTaskClick(task.uuid)) }) {
+                    Text(text = "Delete")
                 }
             }
         }
