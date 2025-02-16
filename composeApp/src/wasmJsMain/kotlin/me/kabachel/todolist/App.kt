@@ -39,6 +39,10 @@ fun App() {
             is State.CreateTask -> {
                 CreateTask(onEvent)
             }
+
+            is State.UpdateTask -> {
+                UpdateTask(state, onEvent)
+            }
         }
     }
 }
@@ -114,6 +118,7 @@ private fun TasksContent(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun TaskItem(task: Task, onEvent: (Event) -> Unit) {
     Card(
@@ -129,16 +134,14 @@ private fun TaskItem(task: Task, onEvent: (Event) -> Unit) {
                 Text(text = task.description, color = Color.Gray, fontSize = 12.sp)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = task.priority.value,
-                    color = Color.White,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(task.priority.getPriorityColor())
-                        .padding(4.dp)
-                )
+                OutlinedCard(
+                    colors = CardDefaults.outlinedCardColors(containerColor = task.priority.getPriorityColor()),
+                    shape = CircleShape,
+                ) {
+                    Text(task.priority.value, modifier = Modifier.padding(8.dp))
+                }
                 Spacer(modifier = Modifier.height(4.dp))
-                Button(onClick = {}) {
+                OutlinedButton(onClick = { onEvent(Event.UpdateTaskClick(task)) }) {
                     Text(text = "Edit")
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -248,6 +251,109 @@ private fun CreateTask(onEvent: (Event) -> Unit) {
             }
         ) {
             Text(text = "Create")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UpdateTask(state: State.UpdateTask, onEvent: (Event) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
+        Text(
+            "Create a task",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            "Task name",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var taskName by remember { mutableStateOf(state.task.name) }
+        TextField(
+            value = taskName,
+            onValueChange = { taskName = it },
+            placeholder = { Text("E.g. write a blog post") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            "Description",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var taskDescription by remember { mutableStateOf(state.task.description) }
+        TextField(
+            value = taskDescription,
+            onValueChange = { taskDescription = it },
+            placeholder = { Text("Add more details to your task") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            "Priority",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var expanded by remember { mutableStateOf(false) }
+        var taskPriority by remember { mutableStateOf(state.task.priority) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                readOnly = true,
+                value = taskPriority.value,
+                onValueChange = {},
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                Task.Priority.entries.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.value) },
+                        onClick = {
+                            taskPriority = option
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = {
+                onEvent(
+                    Event.UpdatedTask(
+                        Task(
+                            uuid = state.task.uuid,
+                            name = taskName,
+                            description = taskDescription,
+                            priority = taskPriority,
+                        )
+                    )
+                )
+            }
+        ) {
+            Text(text = "Update")
         }
     }
 }

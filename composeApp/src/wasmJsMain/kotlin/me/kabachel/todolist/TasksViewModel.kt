@@ -64,6 +64,21 @@ class TasksViewModel(
                     setState { State.TasksContent(tasks.sortedBy { it.name }) }
                 }
             }
+
+            is Event.UpdateTaskClick -> {
+                viewModelScope.launch {
+                    setState { State.UpdateTask(event.task) }
+                }
+            }
+
+            is Event.UpdatedTask -> {
+                viewModelScope.launch {
+                    setState { State.Loading }
+                    tasksRepository.updateTask(event.task)
+                    val tasks = tasksRepository.getTasks()
+                    setState { State.TasksContent(tasks.sortedBy { it.name }) }
+                }
+            }
         }
     }
 }

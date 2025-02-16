@@ -11,6 +11,7 @@ sealed interface State : ViewState {
     data object Loading : State
     data class TasksContent(val tasks: List<Task>) : State
     data object CreateTask : State
+    data class UpdateTask(val task: Task) : State
 }
 
 sealed interface Event : ViewEvent {
@@ -25,4 +26,7 @@ sealed interface Event : ViewEvent {
     data class CreatedTask(val task: Task) : Event
 
     data class DeleteTaskClick(val uuid: Uuid) : Event
+
+    data class UpdateTaskClick(val task: Task) : Event
+    data class UpdatedTask(val task: Task) : Event
 }

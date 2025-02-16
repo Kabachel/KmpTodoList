@@ -42,6 +42,7 @@ class TasksRepository {
 
     suspend fun updateTask(task: Task): Boolean = coroutineScope {
         client.put("$BASE_URL/tasks") {
+            contentType(ContentType.Application.Json)
             setBody(task)
         }.status.isSuccess()
     }
