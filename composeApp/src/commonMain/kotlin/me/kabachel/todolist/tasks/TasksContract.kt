@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package me.kabachel.todolist
+package me.kabachel.todolist.tasks
 
+import me.kabachel.todolist.Task
 import me.kabachel.todolist.mvi.ViewEvent
 import me.kabachel.todolist.mvi.ViewState
 import kotlin.uuid.ExperimentalUuidApi

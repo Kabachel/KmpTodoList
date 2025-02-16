@@ -1,4 +1,4 @@
-package me.kabachel.todolist
+package me.kabachel.todolist.tasks
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -10,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
+import me.kabachel.todolist.Task
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

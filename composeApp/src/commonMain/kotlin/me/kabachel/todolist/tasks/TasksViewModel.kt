@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package me.kabachel.todolist
+package me.kabachel.todolist.tasks
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
