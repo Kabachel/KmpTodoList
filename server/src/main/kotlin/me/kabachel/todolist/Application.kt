@@ -45,8 +45,7 @@ fun Application.module() {
                 val isSuccess = tasksRepository.addTask(newTask)
 
                 val httpStatusCode = if (isSuccess) HttpStatusCode.Created else HttpStatusCode.InternalServerError
-                val answerBody = if (isSuccess) newUuid.toString() else ""
-                call.respond(httpStatusCode, answerBody)
+                call.respond(httpStatusCode)
             }
 
             put {

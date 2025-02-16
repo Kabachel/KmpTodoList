@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package me.kabachel.todolist
 
 import androidx.compose.foundation.background
@@ -7,7 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun App() {
     MaterialTheme {
@@ -31,17 +33,20 @@ fun App() {
             }
 
             is State.TasksContent -> {
-                TasksContent(onEvent, state)
+                TasksContent(state, onEvent)
+            }
+
+            is State.CreateTask -> {
+                CreateTask(onEvent)
             }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TasksContent(
+    state: State.TasksContent,
     onEvent: (Event) -> Unit,
-    state: State.TasksContent
 ) {
     Column(
         modifier = Modifier
@@ -62,9 +67,8 @@ private fun TasksContent(
             style = MaterialTheme.typography.titleMedium,
         )
 
-        FlowRow(
+        Row(
             horizontalArrangement = Arrangement.spacedBy(7.dp),
-            verticalArrangement = Arrangement.spacedBy(7.dp),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
             Text(
@@ -89,6 +93,15 @@ private fun TasksContent(
                     .clip(CircleShape)
                     .background(color = Color.Gray)
                     .clickable { onEvent(Event.SortBy.Priority) }
+                    .padding(vertical = 3.dp, horizontal = 5.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                "Create task",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(color = Color.Gray)
+                    .clickable { onEvent(Event.CreateTaskClick) }
                     .padding(vertical = 3.dp, horizontal = 5.dp)
             )
         }
@@ -129,6 +142,108 @@ private fun TaskItem(task: Task) {
                     Text(text = "Edit")
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CreateTask(onEvent: (Event) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
+        Text(
+            "Create a task",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            "Task name",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var taskName by remember { mutableStateOf("") }
+        TextField(
+            value = taskName,
+            onValueChange = { taskName = it },
+            placeholder = { Text("E.g. write a blog post") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            "Description",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var taskDescription by remember { mutableStateOf("") }
+        TextField(
+            value = taskDescription,
+            onValueChange = { taskDescription = it },
+            placeholder = { Text("Add more details to your task") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            "Priority",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        var expanded by remember { mutableStateOf(false) }
+        var taskPriority by remember { mutableStateOf(Task.Priority.Low) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                readOnly = true,
+                value = taskPriority.value,
+                onValueChange = {},
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                Task.Priority.entries.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.value) },
+                        onClick = {
+                            taskPriority = option
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = {
+                onEvent(
+                    Event.CreatedTask(
+                        Task(
+                            name = taskName,
+                            description = taskDescription,
+                            priority = taskPriority,
+                        )
+                    )
+                )
+            }
+        ) {
+            Text(text = "Create")
         }
     }
 }

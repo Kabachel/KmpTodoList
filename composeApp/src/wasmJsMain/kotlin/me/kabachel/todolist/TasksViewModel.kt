@@ -39,6 +39,19 @@ class TasksViewModel(
                     setState { State.TasksContent(sortedTasks) }
                 }
             }
+
+            is Event.CreateTaskClick -> {
+                setState { State.CreateTask }
+            }
+
+            is Event.CreatedTask -> {
+                viewModelScope.launch {
+                    setState { State.Loading }
+                    tasksRepository.createTask(event.task)
+                    val tasks = tasksRepository.getTasks()
+                    setState { State.TasksContent(tasks.sortedBy { it.name }) }
+                }
+            }
         }
     }
 }
