@@ -54,4 +54,4 @@ class TasksRepository {
     }
 }
 
-private const val BASE_URL = "http://localhost:8080"
+private const val BASE_URL = "https://bbau5cqv1r12kj02v1sd.containers.yandexcloud.net"
