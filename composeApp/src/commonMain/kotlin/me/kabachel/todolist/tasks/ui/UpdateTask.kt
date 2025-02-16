@@ -10,6 +10,6 @@ internal fun UpdateTask(state: State.UpdateTask, onEvent: (Event) -> Unit) {
     TaskForms(
         initTask = state.task,
         submitButtonText = "Update",
-        onSubmit = { task -> onEvent(Event.CreatedTask(task)) }
+        onSubmit = { task -> onEvent(Event.UpdatedTask(task)) }
     )
 }

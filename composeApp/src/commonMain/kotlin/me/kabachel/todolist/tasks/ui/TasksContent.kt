@@ -1,7 +1,6 @@
 package me.kabachel.todolist.tasks.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,6 +27,8 @@ internal fun TasksContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
+            .padding(horizontal = 32.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             "My Tasks",
@@ -37,50 +37,31 @@ internal fun TasksContent(
             style = MaterialTheme.typography.titleLarge,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            "Sort by",
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.titleMedium,
-        )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(7.dp),
             modifier = Modifier.align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "Name",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(color = Color.Gray)
-                    .clickable { onEvent(Event.SortBy.Name) }
-                    .padding(vertical = 3.dp, horizontal = 5.dp)
+                "Sort by:",
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleMedium,
             )
-            Text(
-                "Description",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(color = Color.Gray)
-                    .clickable { onEvent(Event.SortBy.Description) }
-                    .padding(vertical = 3.dp, horizontal = 5.dp)
-            )
-            Text(
-                "Priority",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(color = Color.Gray)
-                    .clickable { onEvent(Event.SortBy.Priority) }
-                    .padding(vertical = 3.dp, horizontal = 5.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                "Create task",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(color = Color.Gray)
-                    .clickable { onEvent(Event.CreateTaskClick) }
-                    .padding(vertical = 3.dp, horizontal = 5.dp)
-            )
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(onClick = { onEvent(Event.SortBy.Name) }) {
+                Text("Name")
+            }
+            OutlinedButton(onClick = { onEvent(Event.SortBy.Description) }) {
+                Text("Description")
+            }
+            OutlinedButton(onClick = { onEvent(Event.SortBy.Priority) }) {
+                Text("Priority")
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedButton(onClick = { onEvent(Event.CreateTaskClick) }, colors = ButtonDefaults.buttonColors()) {
+            Text("Create task")
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
