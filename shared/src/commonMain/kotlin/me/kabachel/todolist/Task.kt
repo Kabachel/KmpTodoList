@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class Task(
     @Serializable(with = UuidSerializer::class)
-    val id: Uuid,
+    val uuid: Uuid,
     val name: String,
     val description: String,
     val priority: Priority

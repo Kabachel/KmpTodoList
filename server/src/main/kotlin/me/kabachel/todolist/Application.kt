@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package me.kabachel.todolist
 
 import io.ktor.http.*
@@ -5,8 +7,10 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlin.uuid.ExperimentalUuidApi
@@ -19,10 +23,47 @@ fun main() {
 
 fun Application.module() {
     installModules()
+    val tasksRepository = TasksRepository()
 
     routing {
-        get("tasks") {
-            call.respond(HttpStatusCode.OK, tasks)
+        route("tasks") {
+            get {
+                val tasks = tasksRepository.getTasks()
+                call.respond(HttpStatusCode.OK, tasks)
+            }
+
+            get("{uuid}") {
+                val uuid = Uuid.parse(call.parameters["uuid"] ?: throw BadRequestException("Missing uuid"))
+                val task = tasksRepository.getTask(uuid) ?: throw NotFoundException("Task not found by uuid: $uuid")
+                call.respond(HttpStatusCode.OK, task)
+            }
+
+            post {
+                val taskRequest = call.receive<Task>()
+                val newUuid = Uuid.random()
+                val newTask = taskRequest.copy(uuid = newUuid)
+                val isSuccess = tasksRepository.addTask(newTask)
+
+                val httpStatusCode = if (isSuccess) HttpStatusCode.Created else HttpStatusCode.InternalServerError
+                val answerBody = if (isSuccess) newUuid.toString() else ""
+                call.respond(httpStatusCode, answerBody)
+            }
+
+            put {
+                val taskRequest = call.receive<Task>()
+                val isSuccess = tasksRepository.updateTask(taskRequest)
+
+                val httpStatusCode = if (isSuccess) HttpStatusCode.OK else HttpStatusCode.NotFound
+                call.respond(httpStatusCode)
+            }
+
+            delete("{uuid}") {
+                val uuid = Uuid.parse(call.parameters["uuid"] ?: throw BadRequestException("Missing uuid"))
+                val isSuccess = tasksRepository.deleteTask(uuid)
+
+                val httpStatusCode = if (isSuccess) HttpStatusCode.OK else HttpStatusCode.NotFound
+                call.respond(httpStatusCode)
+            }
         }
     }
 }
@@ -47,37 +88,3 @@ private fun Application.contentNegotiationInstall() {
         json()
     }
 }
-
-@OptIn(ExperimentalUuidApi::class)
-private val tasks = listOf(
-    Task(
-        id = Uuid.random(),
-        name = "Таска в тудуисте",
-        description = "Очень классная таска",
-        Task.Priority.Medium
-    ),
-//    Task(
-//        id = Uuid.random(),
-//        name = "Write marketing copy",
-//        description = "Write a compelling description for the new product",
-//        priority = Task.Priority.High,
-//    ),
-//    Task(
-//        id = Uuid.random(),
-//        name = "Implement payment flow",
-//        description = "Set up a system for processing payments",
-//        priority = Task.Priority.Vital,
-//    ),
-//    Task(
-//        id = Uuid.random(),
-//        name = "Create user onboarding",
-//        description = "Design a seamless onboarding process for new users",
-//        priority = Task.Priority.High,
-//    ),
-//    Task(
-//        id = Uuid.random(),
-//        name = "Optimize for SEO",
-//        description = "Improve search engine rankings to increase organic traffic",
-//        priority = Task.Priority.Low,
-//    )
-)
