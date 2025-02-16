@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,6 +102,11 @@ private fun TaskItem(task: Task, onEvent: (Event) -> Unit) {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            var isChecked by remember { mutableStateOf(task.isCompleted) }
+            Switch(checked = isChecked, onCheckedChange = {
+                isChecked = it
+                onEvent(Event.CompleteTask(task, isChecked))
+            })
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = task.name, fontWeight = FontWeight.Bold)
                 Text(text = task.description, color = Color.Gray, fontSize = 12.sp)

@@ -30,4 +30,6 @@ sealed interface Event : ViewEvent {
 
     data class UpdateTaskClick(val task: Task) : Event
     data class UpdatedTask(val task: Task) : Event
+
+    data class CompleteTask(val task: Task, val isCompleted: Boolean) : Event
 }

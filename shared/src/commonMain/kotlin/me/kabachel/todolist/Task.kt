@@ -12,7 +12,8 @@ data class Task(
     val uuid: Uuid = Uuid.NIL,
     val name: String,
     val description: String,
-    val priority: Priority
+    val priority: Priority,
+    val isCompleted: Boolean,
 ) {
     enum class Priority(val value: String) {
         Low("Low"),

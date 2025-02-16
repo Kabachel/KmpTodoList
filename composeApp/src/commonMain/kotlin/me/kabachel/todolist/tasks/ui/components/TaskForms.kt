@@ -105,6 +105,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
                         name = taskName,
                         description = taskDescription,
                         priority = taskPriority,
+                        isCompleted = false,
                     )
                 )
             }
