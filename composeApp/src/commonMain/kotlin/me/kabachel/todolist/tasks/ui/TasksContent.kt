@@ -38,27 +38,7 @@ internal fun TasksContent(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(7.dp),
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "Sort by:",
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            OutlinedButton(onClick = { onEvent(Event.SortBy.Name) }) {
-                Text("Name")
-            }
-            OutlinedButton(onClick = { onEvent(Event.SortBy.Description) }) {
-                Text("Description")
-            }
-            OutlinedButton(onClick = { onEvent(Event.SortBy.Priority) }) {
-                Text("Priority")
-            }
-        }
+        SortingChips(onEvent)
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(onClick = { onEvent(Event.CreateTaskClick) }, colors = ButtonDefaults.buttonColors()) {
             Text("Create task")
@@ -69,6 +49,46 @@ internal fun TasksContent(
                 TaskItem(task, onEvent)
             }
         }
+    }
+}
+
+@Composable
+private fun SortingChips(onEvent: (Event) -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        var currentChip by remember { mutableStateOf<Event.SortBy>(Event.SortBy.Name) }
+        Text(
+            "Sort by:",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        FilterChip(
+            selected = currentChip == Event.SortBy.Name,
+            onClick = {
+                onEvent(Event.SortBy.Name)
+                currentChip = Event.SortBy.Name
+            },
+            label = { Text("Name") },
+        )
+        FilterChip(
+            selected = currentChip == Event.SortBy.Description,
+            onClick = {
+                onEvent(Event.SortBy.Description)
+                currentChip = Event.SortBy.Description
+            },
+            label = { Text("Description") },
+        )
+        FilterChip(
+            selected = currentChip == Event.SortBy.Priority,
+            onClick = {
+                onEvent(Event.SortBy.Priority)
+                currentChip = Event.SortBy.Priority
+            },
+            label = { Text("Priority") },
+        )
     }
 }
 
