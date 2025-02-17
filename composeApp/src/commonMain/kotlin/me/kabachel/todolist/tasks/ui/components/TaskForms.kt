@@ -4,6 +4,9 @@ package me.kabachel.todolist.tasks.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,10 +41,32 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         )
         Spacer(modifier = Modifier.height(8.dp))
         var taskName by remember { mutableStateOf(initTask?.name ?: "") }
+        var taskNameIsError by remember { mutableStateOf(false) }
+        fun validateTaskName(text: String) {
+            taskNameIsError = text.isBlank()
+        }
         TextField(
             value = taskName,
-            onValueChange = { taskName = it },
-            placeholder = { Text("E.g. write a blog post") }
+            onValueChange = {
+                taskName = it
+                validateTaskName(taskName)
+            },
+            singleLine = true,
+            placeholder = { Text("E.g. write a blog post") },
+            isError = taskNameIsError,
+            supportingText = {
+                if (taskNameIsError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Task name cannot be empty",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            trailingIcon = {
+                if (taskNameIsError) Icon(Icons.Outlined.Info, "error", tint = MaterialTheme.colorScheme.error)
+            },
+            keyboardActions = KeyboardActions { validateTaskName(taskName) },
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -53,10 +78,32 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         )
         Spacer(modifier = Modifier.height(8.dp))
         var taskDescription by remember { mutableStateOf(initTask?.description ?: "") }
+        var taskDescriptionIsError by remember { mutableStateOf(false) }
+        fun validateTaskDescription(text: String) {
+            taskDescriptionIsError = text.isBlank()
+        }
         TextField(
             value = taskDescription,
-            onValueChange = { taskDescription = it },
-            placeholder = { Text("Add more details to your task") }
+            onValueChange = {
+                taskDescription = it
+                validateTaskDescription(taskDescription)
+            },
+            singleLine = true,
+            placeholder = { Text("Add more details to your task") },
+            isError = taskDescriptionIsError,
+            supportingText = {
+                if (taskDescriptionIsError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Description cannot be empty",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            trailingIcon = {
+                if (taskDescriptionIsError) Icon(Icons.Outlined.Info, "error", tint = MaterialTheme.colorScheme.error)
+            },
+            keyboardActions = KeyboardActions { validateTaskDescription(taskDescription) },
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -109,7 +156,9 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
                     isCompleted = initTask?.isCompleted ?: false,
                 )
                 onSubmit(task)
-            }
+            },
+            enabled = taskNameIsError.not() and taskDescriptionIsError.not()
+                    and taskName.isNotBlank() and taskDescription.isNotBlank(),
         ) {
             Text(text = submitButtonText)
         }
