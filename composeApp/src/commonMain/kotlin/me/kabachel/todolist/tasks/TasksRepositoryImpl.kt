@@ -11,11 +11,12 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import me.kabachel.todolist.Task
+import me.kabachel.todolist.TasksRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class TasksRepository {
+class TasksRepositoryImpl : TasksRepository {
     private val client = HttpClient(Js) {
         install(Logging)
         install(ContentNegotiation) {
@@ -26,29 +27,29 @@ class TasksRepository {
         }
     }
 
-    suspend fun getTasks(): List<Task> = coroutineScope {
+    override suspend fun getTasks(): List<Task> = coroutineScope {
         client.get("$BASE_URL/tasks").body()
     }
 
-    suspend fun getTask(uuid: Uuid): Task = coroutineScope {
+    override suspend fun getTask(uuid: Uuid): Task = coroutineScope {
         client.get("$BASE_URL/tasks/$uuid").body()
     }
 
-    suspend fun createTask(task: Task): Boolean = coroutineScope {
+    override suspend fun createTask(task: Task): Boolean = coroutineScope {
         client.post("$BASE_URL/tasks") {
             contentType(ContentType.Application.Json)
             setBody(task)
         }.status.isSuccess()
     }
 
-    suspend fun updateTask(task: Task): Boolean = coroutineScope {
+    override suspend fun updateTask(task: Task): Boolean = coroutineScope {
         client.put("$BASE_URL/tasks") {
             contentType(ContentType.Application.Json)
             setBody(task)
         }.status.isSuccess()
     }
 
-    suspend fun deleteTask(uuid: Uuid): Boolean = coroutineScope {
+    override suspend fun deleteTask(uuid: Uuid): Boolean = coroutineScope {
         val statusCode = client.delete("$BASE_URL/tasks/$uuid").status
         statusCode.isSuccess()
     }

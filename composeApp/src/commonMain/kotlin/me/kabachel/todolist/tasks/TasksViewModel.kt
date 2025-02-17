@@ -10,7 +10,7 @@ import me.kabachel.todolist.mvi.NoEffect
 import kotlin.uuid.ExperimentalUuidApi
 
 class TasksViewModel(
-    private val tasksRepository: TasksRepository,
+    private val tasksRepository: TasksRepositoryImpl,
 ) : BaseViewModel<Event, State, NoEffect>() {
 
     override fun setInitialState(): State = State.Loading

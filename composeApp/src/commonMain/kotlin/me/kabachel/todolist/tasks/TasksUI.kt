@@ -9,7 +9,7 @@ import me.kabachel.todolist.tasks.ui.UpdateTask
 
 @Composable
 internal fun TasksUI() {
-    val viewModel: TasksViewModel = viewModel { TasksViewModel(TasksRepository()) }
+    val viewModel: TasksViewModel = viewModel { TasksViewModel(TasksRepositoryImpl()) }
     val onEvent: (Event) -> Unit = viewModel::handleEvent
     when (val state = viewModel.viewState.value) {
         is State.Loading -> {

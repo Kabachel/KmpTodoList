@@ -23,7 +23,7 @@ fun main() {
 
 fun Application.module() {
     installModules()
-    val tasksRepository = TasksRepository()
+    val tasksRepository = TasksRepositoryDatabase()
 
     routing {
         route("tasks") {
@@ -42,7 +42,7 @@ fun Application.module() {
                 val taskRequest = call.receive<Task>()
                 val newUuid = Uuid.random()
                 val newTask = taskRequest.copy(uuid = newUuid)
-                val isSuccess = tasksRepository.addTask(newTask)
+                val isSuccess = tasksRepository.createTask(newTask)
 
                 val httpStatusCode = if (isSuccess) HttpStatusCode.Created else HttpStatusCode.InternalServerError
                 call.respond(httpStatusCode)
@@ -68,11 +68,12 @@ fun Application.module() {
 }
 
 private fun Application.installModules() {
-    corsInstall()
-    contentNegotiationInstall()
+    installCors()
+    installContentNegotiation()
+    installDatabase()
 }
 
-private fun Application.corsInstall() {
+private fun Application.installCors() {
     install(CORS) {
         anyHost()
         allowMethod(HttpMethod.Get)
@@ -85,7 +86,7 @@ private fun Application.corsInstall() {
     }
 }
 
-private fun Application.contentNegotiationInstall() {
+private fun Application.installContentNegotiation() {
     install(ContentNegotiation) {
         json()
     }
