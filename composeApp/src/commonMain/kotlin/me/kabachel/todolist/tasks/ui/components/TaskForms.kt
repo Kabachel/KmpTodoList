@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.kabachel.todolist.Task
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +24,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "Create a task",
+            "$submitButtonText a task",
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge,
         )
@@ -100,14 +101,14 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
 
         OutlinedButton(
             onClick = {
-                onSubmit(
-                    Task(
-                        name = taskName,
-                        description = taskDescription,
-                        priority = taskPriority,
-                        isCompleted = false,
-                    )
+                val task = Task(
+                    uuid = initTask?.uuid ?: Uuid.NIL,
+                    name = taskName,
+                    description = taskDescription,
+                    priority = taskPriority,
+                    isCompleted = initTask?.isCompleted ?: false,
                 )
+                onSubmit(task)
             }
         ) {
             Text(text = submitButtonText)
