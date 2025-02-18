@@ -16,9 +16,9 @@ data class Task(
     val isCompleted: Boolean,
 ) {
     enum class Priority(val value: String) {
-        Low("Low"),
-        Medium("Medium"),
-        High("High"),
         Vital("Vital"),
+        High("High"),
+        Medium("Medium"),
+        Low("Low"),
     }
 }

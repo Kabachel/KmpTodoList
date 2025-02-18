@@ -78,32 +78,11 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         )
         Spacer(modifier = Modifier.height(8.dp))
         var taskDescription by remember { mutableStateOf(initTask?.description ?: "") }
-        var taskDescriptionIsError by remember { mutableStateOf(false) }
-        fun validateTaskDescription(text: String) {
-            taskDescriptionIsError = text.isBlank()
-        }
         TextField(
             value = taskDescription,
-            onValueChange = {
-                taskDescription = it
-                validateTaskDescription(taskDescription)
-            },
+            onValueChange = { taskDescription = it },
             singleLine = true,
             placeholder = { Text("Add more details to your task") },
-            isError = taskDescriptionIsError,
-            supportingText = {
-                if (taskDescriptionIsError) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Description cannot be empty",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            trailingIcon = {
-                if (taskDescriptionIsError) Icon(Icons.Outlined.Info, "error", tint = MaterialTheme.colorScheme.error)
-            },
-            keyboardActions = KeyboardActions { validateTaskDescription(taskDescription) },
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -131,7 +110,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                Task.Priority.entries.forEach { option ->
+                Task.Priority.entries.reversed().forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option.value) },
                         onClick = {
@@ -157,8 +136,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
                 )
                 onSubmit(task)
             },
-            enabled = taskNameIsError.not() and taskDescriptionIsError.not()
-                    and taskName.isNotBlank() and taskDescription.isNotBlank(),
+            enabled = taskNameIsError.not() and taskName.isNotBlank(),
         ) {
             Text(text = submitButtonText)
         }
