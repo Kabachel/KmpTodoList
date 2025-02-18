@@ -31,9 +31,31 @@ kotlin {
 //            freeCompilerArgs.add("-Xwasm-attach-js-exception")
 //        }
     }
-    
+
+    js(IR) {
+        moduleName = "composeApp"
+        browser {
+            val rootDirPath = project.rootDir.path
+            val projectDirPath = project.projectDir.path
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(rootDirPath)
+                        add(projectDirPath)
+                    }
+                }
+            }
+        }
+        compilerOptions {
+            target = "es2015"
+        }
+        binaries.executable()
+    }
+
     sourceSets {
-        
+
         commonMain.dependencies {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
