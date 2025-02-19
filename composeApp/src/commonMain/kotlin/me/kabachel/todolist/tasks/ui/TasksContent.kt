@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import me.kabachel.todolist.Task
 import me.kabachel.todolist.tasks.Event
 import me.kabachel.todolist.tasks.State
+import me.kabachel.todolist.tasks.locale.localeToRussian
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
@@ -31,7 +32,7 @@ internal fun TasksContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "My Tasks",
+            "My Tasks".localeToRussian("Мои задачи"),
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             style = MaterialTheme.typography.titleLarge,
@@ -41,7 +42,7 @@ internal fun TasksContent(
         SortingChips(onEvent)
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(onClick = { onEvent(Event.CreateTaskClick) }, colors = ButtonDefaults.buttonColors()) {
-            Text("Create task")
+            Text("Create task".localeToRussian("Создать задачу"))
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
@@ -60,7 +61,7 @@ private fun SortingChips(onEvent: (Event) -> Unit) {
     ) {
         var currentChip by remember { mutableStateOf<Event.SortBy>(Event.SortBy.Name) }
         Text(
-            "Sort by:",
+            "Sort by:".localeToRussian("Сортировать по:"),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleMedium,
         )
@@ -71,7 +72,7 @@ private fun SortingChips(onEvent: (Event) -> Unit) {
                 onEvent(Event.SortBy.Name)
                 currentChip = Event.SortBy.Name
             },
-            label = { Text("Name") },
+            label = { Text("Name".localeToRussian("Имени")) },
         )
         FilterChip(
             selected = currentChip == Event.SortBy.Description,
@@ -79,7 +80,7 @@ private fun SortingChips(onEvent: (Event) -> Unit) {
                 onEvent(Event.SortBy.Description)
                 currentChip = Event.SortBy.Description
             },
-            label = { Text("Description") },
+            label = { Text("Description".localeToRussian("Описанию")) },
         )
         FilterChip(
             selected = currentChip == Event.SortBy.Priority,
@@ -87,7 +88,7 @@ private fun SortingChips(onEvent: (Event) -> Unit) {
                 onEvent(Event.SortBy.Priority)
                 currentChip = Event.SortBy.Priority
             },
-            label = { Text("Priority") },
+            label = { Text("Priority".localeToRussian("Приоритету")) },
         )
     }
 }
@@ -117,15 +118,15 @@ private fun TaskItem(task: Task, onEvent: (Event) -> Unit) {
                     colors = CardDefaults.outlinedCardColors(containerColor = task.priority.getPriorityColor()),
                     shape = CircleShape,
                 ) {
-                    Text(task.priority.value, modifier = Modifier.padding(8.dp))
+                    Text(task.priority.localeToRussian(), modifier = Modifier.padding(8.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedButton(onClick = { onEvent(Event.UpdateTaskClick(task)) }) {
-                    Text(text = "Edit")
+                    Text(text = "Edit".localeToRussian("Редактировать"))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedButton(onClick = { onEvent(Event.DeleteTaskClick(task.uuid)) }) {
-                    Text(text = "Delete")
+                    Text(text = "Delete".localeToRussian("Удалить"))
                 }
             }
         }

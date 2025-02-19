@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.kabachel.todolist.Task
+import me.kabachel.todolist.tasks.locale.localeToRussian
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -27,7 +28,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "$submitButtonText a task",
+            "$submitButtonText a task".localeToRussian("$submitButtonText задачу"),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge,
         )
@@ -35,7 +36,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Task name",
+            "Task name".localeToRussian("Название задачи"),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -52,13 +53,13 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
                 validateTaskName(taskName)
             },
             singleLine = true,
-            placeholder = { Text("E.g. write a blog post") },
+            placeholder = { Text("E.g. write a blog post".localeToRussian("Написать пост в блог")) },
             isError = taskNameIsError,
             supportingText = {
                 if (taskNameIsError) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Task name cannot be empty",
+                        text = "Task name cannot be empty".localeToRussian("Имя задачи не может быть пустым"),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -72,7 +73,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            "Description",
+            "Description".localeToRussian("Описание"),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -82,13 +83,13 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
             value = taskDescription,
             onValueChange = { taskDescription = it },
             singleLine = true,
-            placeholder = { Text("Add more details to your task") },
+            placeholder = { Text("Add more details to your task".localeToRussian("Добавь описание к своей задаче")) },
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            "Priority",
+            "Priority".localeToRussian("Приоритет"),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -101,7 +102,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
         ) {
             TextField(
                 readOnly = true,
-                value = taskPriority.value,
+                value = taskPriority.localeToRussian(),
                 onValueChange = {},
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
@@ -112,7 +113,7 @@ internal fun TaskForms(initTask: Task?, submitButtonText: String, onSubmit: (Tas
             ) {
                 Task.Priority.entries.reversed().forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option.value) },
+                        text = { Text(option.localeToRussian()) },
                         onClick = {
                             taskPriority = option
                             expanded = false
